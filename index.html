@@ -107,7 +107,7 @@
     <span class="identifier">std</span><span class="special">::</span><span class="identifier">time_t</span>
 <span class="special">&gt;;</span>
 
-<span class="keyword">struct</span> <span class="identifier">auth_info_aggreagte</span> <span class="special">{</span>
+<span class="keyword">struct</span> <span class="identifier">auth_info_aggregate</span> <span class="special">{</span>
     <span class="identifier">std</span><span class="special">::</span><span class="identifier">int64_t</span> <span class="identifier">id</span><span class="special">;</span>
     <span class="identifier">std</span><span class="special">::</span><span class="identifier">int64_t</span> <span class="identifier">session_id</span><span class="special">;</span>
     <span class="identifier">std</span><span class="special">::</span><span class="identifier">int64_t</span> <span class="identifier">source_id</span><span class="special">;</span>
@@ -115,7 +115,9 @@
 <span class="special">};</span>
 </pre>
 <p>
-        Definition via structure is much more clear. Same story with usages: <code class="computeroutput"><span class="keyword">return</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">get</span><span class="special">&lt;</span><span class="number">1</span><span class="special">&gt;(</span><span class="identifier">value</span><span class="special">);</span></code> vs. <code class="computeroutput"><span class="keyword">return</span>
+        Definition via <a href="https://en.cppreference.com/w/cpp/language/aggregate_initialization" target="_top">aggregate
+        initializable</a> structure is much more clear. Same story with usages:
+        <code class="computeroutput"><span class="keyword">return</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">get</span><span class="special">&lt;</span><span class="number">1</span><span class="special">&gt;(</span><span class="identifier">value</span><span class="special">);</span></code> vs. <code class="computeroutput"><span class="keyword">return</span>
         <span class="identifier">value</span><span class="special">.</span><span class="identifier">session_id</span><span class="special">;</span></code>.
       </p>
 <p>
@@ -197,17 +199,18 @@
 <tbody><tr>
 <td>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="identifier">user_info</span> <span class="identifier">retrieve_friend</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string_view</span> <span class="identifier">name</span><span class="special">)</span> <span class="special">{</span>
-    <span class="keyword">auto</span> <span class="identifier">tuple_info</span> <span class="special">=</span> <span class="identifier">db</span><span class="special">::</span><span class="identifier">one_row_as</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">int64_t</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">int64_t</span><span class="special">&gt;(</span>
+    <span class="identifier">std</span><span class="special">::</span><span class="identifier">tuple</span><span class="special">&lt;&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">int64_t</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">int64_t</span><span class="special">&gt;&gt;</span> <span class="identifier">info</span>
+      <span class="special">=</span> <span class="identifier">db</span><span class="special">::</span><span class="identifier">one_row_as</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">int64_t</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">int64_t</span><span class="special">&gt;(</span>
         <span class="string">"SELECT id, name, github_stars, email FROM user_infos WHERE name=$0"</span><span class="special">,</span>
         <span class="identifier">name</span>
     <span class="special">);</span>
 
     <span class="keyword">auto</span> <span class="identifier">friend_info</span> <span class="special">=</span> <span class="identifier">ask_user_for_friend</span><span class="special">(</span>
         <span class="identifier">user_info</span><span class="special">{</span>
-            <span class="identifier">std</span><span class="special">::</span><span class="identifier">move</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">get</span><span class="special">&lt;</span><span class="number">0</span><span class="special">&gt;(</span><span class="identifier">tuple_info</span><span class="special">)),</span>
-            <span class="identifier">std</span><span class="special">::</span><span class="identifier">move</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">get</span><span class="special">&lt;</span><span class="number">1</span><span class="special">&gt;(</span><span class="identifier">tuple_info</span><span class="special">)),</span>
-            <span class="identifier">std</span><span class="special">::</span><span class="identifier">move</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">get</span><span class="special">&lt;</span><span class="number">2</span><span class="special">&gt;(</span><span class="identifier">tuple_info</span><span class="special">)),</span>
-            <span class="identifier">std</span><span class="special">::</span><span class="identifier">move</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">get</span><span class="special">&lt;</span><span class="number">3</span><span class="special">&gt;(</span><span class="identifier">tuple_info</span><span class="special">)),</span>
+            <span class="identifier">std</span><span class="special">::</span><span class="identifier">move</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">get</span><span class="special">&lt;</span><span class="number">0</span><span class="special">&gt;(</span><span class="identifier">info</span><span class="special">)),</span>
+            <span class="identifier">std</span><span class="special">::</span><span class="identifier">move</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">get</span><span class="special">&lt;</span><span class="number">1</span><span class="special">&gt;(</span><span class="identifier">info</span><span class="special">)),</span>
+            <span class="identifier">std</span><span class="special">::</span><span class="identifier">move</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">get</span><span class="special">&lt;</span><span class="number">2</span><span class="special">&gt;(</span><span class="identifier">info</span><span class="special">)),</span>
+            <span class="identifier">std</span><span class="special">::</span><span class="identifier">move</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">get</span><span class="special">&lt;</span><span class="number">3</span><span class="special">&gt;(</span><span class="identifier">info</span><span class="special">)),</span>
         <span class="special">}</span>
     <span class="special">);</span>
 
@@ -225,12 +228,12 @@
               </td>
 <td>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="identifier">user_info</span> <span class="identifier">retrieve_friend</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string_view</span> <span class="identifier">name</span><span class="special">)</span> <span class="special">{</span>
-    <span class="keyword">const</span> <span class="keyword">auto</span> <span class="identifier">info</span> <span class="special">=</span> <span class="identifier">db</span><span class="special">::</span><span class="identifier">one_row_as</span><span class="special">&lt;</span><span class="identifier">user_info</span><span class="special">&gt;(</span>
+    <span class="identifier">user_info</span> <span class="identifier">info</span> <span class="special">=</span> <span class="identifier">db</span><span class="special">::</span><span class="identifier">one_row_as</span><span class="special">&lt;</span><span class="identifier">user_info</span><span class="special">&gt;(</span>
         <span class="string">"SELECT id, name, github_stars, email FROM user_infos WHERE name=$0"</span><span class="special">,</span>
         <span class="identifier">name</span>
     <span class="special">);</span>
 
-    <span class="keyword">auto</span> <span class="identifier">friend_info</span> <span class="special">=</span> <span class="identifier">ask_user_for_friend</span><span class="special">(</span><span class="identifier">info</span><span class="special">);</span>
+    <span class="keyword">auto</span> <span class="identifier">friend_info</span> <span class="special">=</span> <span class="identifier">ask_user_for_friend</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">move</span><span class="special">(</span><span class="identifier">info</span><span class="special">));</span>
 
     <span class="identifier">db</span><span class="special">::</span><span class="identifier">insert</span><span class="special">(</span>
         <span class="string">"INSERT INTO user_infos(id, name, github_stars, email) VALUES ($0, $1, $2, $3)"</span><span class="special">,</span>
@@ -364,7 +367,7 @@
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
-<td align="left"><p><small>Last revised: October 05, 2020 at 16:56:42 GMT</small></p></td>
+<td align="left"><p><small>Last revised: October 05, 2020 at 17:15:00 GMT</small></p></td>
 <td align="right"><div class="copyright-footer"></div></td>
 </tr></table>
 <hr>
